@@ -3451,9 +3451,6 @@ input:where([type='file']):focus {
 .justify-between {
   justify-content: space-between;
 }
-.justify-items-center {
-  justify-items: center;
-}
 .gap-12 {
   gap: 3rem;
 }
@@ -3680,10 +3677,6 @@ input:where([type='file']):focus {
 .bg-indigo-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(238 242 255 / var(--tw-bg-opacity, 1));
-}
-.bg-lime-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(236 252 203 / var(--tw-bg-opacity, 1));
 }
 .bg-primary-100 {
   --tw-bg-opacity: 1;
