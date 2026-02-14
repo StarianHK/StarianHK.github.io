@@ -69,7 +69,7 @@ title_align = "left"
 <div class="mb-16 fade-in-section">
 <h3 class="text-2xl font-bold text-center text-primary mb-8">理事會</h3>
 <div class="max-w-6xl mx-auto bg-white p-10 rounded-xl shadow border border-gray-200 text-center mb-8">
-<div class="bg-lime-100 p-3 pt-8 rounded-lg">
+<div class="bg-white p-3 pt-8 rounded-lg border border-gray-100">
 <div class="text-gray-600 text-2xl font-semibold mb-3">會長</div>
 <h4 class="text-[36px] font-bold text-primary mb-3">黃樂妍</h4>
 <p class="text-gray-500 text-[18px]"> 北京大學/倫敦政治經濟學院/香港科技大學</p>
@@ -263,12 +263,13 @@ title_align = "left"
 
 <div class="bg-white p-6 rounded-lg shadow border-t-4 border-red-400 md:col-span-2 lg:col-span-1 lg:col-start-2">
 <h4 class="text-lg font-bold text-gray-800 mb-4">政策研究部</h4>
+
 <div class="mb-3 pb-3 border-b border-gray-100">
 <span class="text-[18px] font-bold text-accent">部長</span>
 <div class="font-bold text-primary text-[18px]">岑朗楷</div>
 <div class="text-[18px] text-gray-400"> 四川大學<br>北京大學</div>
 </div>
-<div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-[18px] text-gray-600 justify-items-center">
+<div class="grid grid-cols-2 gap-3 text-[18px] text-gray-600">
 <div><span class="font-bold text-[18px]">余澤韋</span><span class="text-[18px] text-gray-400 block"> 人大<br>港科大</span></div>
 <div><span class="font-bold text-[18px]">莫彩儀</span><span class="text-[18px] text-gray-400 block"> 香港大學</span></div>
 <div><span class="font-bold text-[18px]">陳曉儀</span><span class="text-[18px] text-gray-400 block"> 暨南大學</span></div>
