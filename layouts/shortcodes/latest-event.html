@@ -1,0 +1,15 @@
+﻿{{ $events := where .Site.RegularPages "Section" "events" }}
+{{ $latest := first 1 (sort $events "Date" "desc") }}
+
+{{ with index $latest 0 }}
+<div class="rounded-3xl panel-sand p-8">
+    <a href="{{ .RelPermalink }}" class="block text-2xl md:text-3xl font-bold text-slate-900 hover:text-primary-700 transition">
+        {{ .Title }}
+    </a>
+    <a href="{{ .RelPermalink }}" class="detail-link">了解詳情</a>
+</div>
+{{ else }}
+<div class="rounded-3xl panel-sand p-8 text-slate-600">
+    暫無近期活動。
+</div>
+{{ end }}

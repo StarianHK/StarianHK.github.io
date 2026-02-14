@@ -1,0 +1,61 @@
+﻿<footer class="star-footer">
+  <div class="container mx-auto px-6">
+    <div class="star-footer-grid-v2">
+      <div class="footer-brand-block">
+        <div class="footer-brand-row">
+          <img src="{{ .Site.Params.logo | relURL }}" alt="{{ .Site.Title }}" class="footer-brand-logo">
+          <h3>星學匯</h3>
+        </div>
+        <p>連結香港青年，服務內地港生。<br>搭建學習、交流與服務的堅實平台。</p>
+      </div>
+
+      <div class="footer-contact-block">
+        <h4>聯絡我們</h4>
+        <ul>
+          <li><a href="mailto:info@staracademy.hk"><span class="footer-ico">✉</span>info@staracademy.hk</a></li>
+          <li><a href="tel:+85212345678"><span class="footer-ico">☎</span>+852 1234 5678</a></li>
+          <li><span class="footer-ico">📍</span>香港某某區某某大廈</li>
+        </ul>
+      </div>
+
+      <div class="footer-follow-block">
+        <h4>關注我們</h4>
+        <div class="footer-social-grid">
+          <a href="#" class="footer-social-card">
+            <span class="footer-social-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="footer-social-icon-svg" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="9" cy="8" r="3.2"></circle>
+                <circle cx="16.8" cy="8.8" r="2.6"></circle>
+                <path d="M2.8 19.6c0-3.4 3-5.8 6.2-5.8s6.2 2.4 6.2 5.8"></path>
+                <path d="M13.8 19.6c.1-2.3 2-4.3 4.6-4.3 2.5 0 3 1.8 3 4.3"></path>
+              </svg>
+            </span>
+            <span>Facebook</span>
+          </a>
+          <a href="#" class="footer-social-card">
+            <span class="footer-social-icon" aria-hidden="true">
+              <img src="{{ "images/redbook.png" | relURL }}" alt="小紅書" class="footer-social-icon-img">
+            </span>
+            <span>小紅書</span>
+          </a>
+          <a href="#" class="footer-social-card">
+            <span class="footer-social-icon" aria-hidden="true">
+              <img src="{{ "images/gzh.png" | relURL }}" alt="公眾號" class="footer-social-icon-img">
+            </span>
+            <span>公眾號</span>
+          </a>
+          <a href="#" class="footer-social-card">
+            <span class="footer-social-icon" aria-hidden="true">
+              <img src="{{ "images/wechat.png" | relURL }}" alt="聯絡微信" class="footer-social-icon-img">
+            </span>
+            <span>聯絡微信</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="star-footer-bottom">
+      <p>&copy; {{ now.Format "2006" }} 星學匯 Starian. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>

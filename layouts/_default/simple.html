@@ -1,0 +1,23 @@
+﻿{{ define "main" }}
+<section class="inner-page-banner fade-in-section">
+  <div class="container">
+    <h1>{{ .Title }}</h1>
+  </div>
+</section>
+
+<div class="container py-14 md:py-16 mb-12">
+  {{ if or (eq .Section "about") (eq .Section "contact") }}
+  <article class="fade-in-section">
+    <div class="prose prose-lg !max-w-none">
+      {{ .Content }}
+    </div>
+  </article>
+  {{ else }}
+  <article class="simple-page-card fade-in-section">
+    <div class="prose prose-lg !max-w-none">
+      {{ .Content }}
+    </div>
+  </article>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,40 @@
+﻿{{ define "main" }}
+<section class="inner-page-banner fade-in-section">
+  <div class="container">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </div>
+</section>
+
+<div class="container py-14 md:py-16">
+  <div class="events-grid">
+    {{ $paginator := .Paginate .Pages.ByDate.Reverse 9 }}
+    {{ range $paginator.Pages }}
+    <article class="event-card fade-in-section">
+      <div class="event-card-body">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      </div>
+    </article>
+    {{ end }}
+  </div>
+
+  {{ if gt $paginator.TotalPages 1 }}
+  <nav class="events-pagination">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}">上一頁</a>
+    {{ else }}
+    <span class="is-disabled">上一頁</span>
+    {{ end }}
+
+    <span class="page-indicator">第 {{ $paginator.PageNumber }} / {{ $paginator.TotalPages }} 頁</span>
+
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}">下一頁</a>
+    {{ else }}
+    <span class="is-disabled">下一頁</span>
+    {{ end }}
+  </nav>
+  {{ end }}
+</div>
+{{ end }}

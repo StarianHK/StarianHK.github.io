@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Features on Saasify</title>
+    <title>Features on 星學匯 starian</title>
     <link>http://localhost:1313/features/</link>
-    <description>Recent content in Features on Saasify</description>
+    <description>Recent content in Features on 星學匯 starian</description>
     <generator>Hugo</generator>
-    <language>en</language>
+    <language>zh-tw</language>
     <atom:link href="http://localhost:1313/features/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Beautiful Design System</title>

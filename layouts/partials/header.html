@@ -1,0 +1,36 @@
+﻿{{ $headerConfig := .Site.Params.header }}
+<div class="mobile-menu-wrapper">
+  <input type="checkbox" id="nav-toggle" class="nav-toggle">
+  <header class="fixed w-full top-0 z-50 {{ with $headerConfig.background }}{{ . }}{{ else }}site-header-blue{{ end }} {{ with $headerConfig.border }}{{ . }}{{ else }}site-header-border{{ end }}">
+    <div class="container mx-auto px-6">
+      <nav class="site-header-nav flex items-center justify-between">
+        <a href="{{ "/" | relLangURL }}" class="site-header-brand flex items-center">
+          {{ with $headerConfig.logo }}
+          <img src="{{ .src | relURL }}" alt="{{ $.Site.Title }}" class="header-brand-logo">
+          {{ end }}
+          <span class="site-brand">星學匯</span>
+        </a>
+
+        <div class="site-header-menu hidden md:flex items-center">
+          {{ range .Site.Menus.main }}
+          <a href="{{ .URL }}" class="{{ $headerConfig.menu.linkClass | default "site-header-link" }}">{{ .Name }}</a>
+          {{ end }}
+        </div>
+
+        <div class="md:hidden">
+          <label for="nav-toggle" class="mobile-toggle-btn" aria-label="Open menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </label>
+        </div>
+      </nav>
+
+      <div class="nav-content md:hidden">
+        {{ range .Site.Menus.main }}
+        <a href="{{ .URL }}" class="{{ $headerConfig.menu.mobileLinkClass | default "site-mobile-link" }}">{{ .Name }}</a>
+        {{ end }}
+      </div>
+    </div>
+  </header>
+</div>
