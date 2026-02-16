@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Page on 星學匯 Starian</title>
-    <link>https://StarianHK.github.io/page/</link>
+    <link>http://localhost:1313/page/</link>
     <description>Recent content in Page on 星學匯 Starian</description>
     <generator>Hugo</generator>
     <language>zh-tw</language>
-    <atom:link href="https://StarianHK.github.io/page/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/page/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

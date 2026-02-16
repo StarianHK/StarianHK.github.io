@@ -7,6 +7,7 @@
     {{ $pdfName := .Params.pdf_file | default (printf "%s.pdf" $safeBase) }}
     {{ $pdfPath := printf "static/wechat_pdfs/%s" $pdfName }}
     {{ $pdfURL := printf "/wechat_pdfs/%s" $pdfName | relURL }}
+    {{ $hasPdf := fileExists $pdfPath }}
 
     <article>
         <header class="mb-8">
@@ -25,21 +26,23 @@
             {{ partial "post-meta.html" . }}
         </header>
 
-        {{ with .Params.featured_image }}
-            <div class="mb-8">
-                <img src="{{ . }}"
-                     alt="{{ $.Title }}"
-                     class="w-full h-auto rounded-lg"
-                     loading="lazy">
+        {{ if not $hasPdf }}
+            {{ with .Params.featured_image }}
+                <div class="mb-8">
+                    <img src="{{ . }}"
+                         alt="{{ $.Title }}"
+                         class="w-full h-auto rounded-lg"
+                         loading="lazy">
+                </div>
+            {{ end }}
+
+            <div class="prose prose-lg max-w-none">
+                {{ .Content }}
             </div>
         {{ end }}
-
-        <div class="prose prose-lg max-w-none">
-            {{ .Content }}
-        </div>
     </article>
 
-    {{ if fileExists $pdfPath }}
+    {{ if $hasPdf }}
         <section class="event-pdf-card mt-10">
             <div class="event-pdf-card__head">
                 <h2>PDF Preview</h2>
