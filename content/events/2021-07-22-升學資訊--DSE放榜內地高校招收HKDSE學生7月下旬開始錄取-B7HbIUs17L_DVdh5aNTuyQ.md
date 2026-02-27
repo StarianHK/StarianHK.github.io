@@ -2,6 +2,7 @@
 date = '2021-07-22T11:00:05+08:00'
 draft = false
 title = '升學資訊 | DSE放榜！內地高校招收HKDSE學生7月下旬開始錄取！'
+pdf_file = '升學資訊 _ DSE放榜！內地高校招收HKDSE學生7月下旬開始錄取！.pdf'
 +++
 
 升學資訊 | DSE放榜！

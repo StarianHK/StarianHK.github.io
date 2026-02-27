@@ -2,6 +2,7 @@
 date = '2018-01-27T10:37:03+08:00'
 draft = false
 title = '星學滙榮獲優秀義工隊伍銅獎！'
+pdf_file = '星學滙榮獲優秀義工隊伍銅獎！.pdf'
 +++
 
 STARIAN NEWS

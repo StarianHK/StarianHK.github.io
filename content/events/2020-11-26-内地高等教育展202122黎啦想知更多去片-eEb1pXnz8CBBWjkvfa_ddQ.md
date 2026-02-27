@@ -2,6 +2,7 @@
 date = '2020-11-26T09:43:57+08:00'
 draft = false
 title = '内地高等教育展2021/22黎啦！想知更多？去片！'
+pdf_file = '内地高等教育展2021_22黎啦！想知更多？去片！.pdf'
 +++
 
 var __INLINE_SCRIPT__ = (function () {

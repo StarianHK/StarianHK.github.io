@@ -2,6 +2,7 @@
 date = '2022-04-22T13:47:42+08:00'
 draft = false
 title = '友會活動推介 | YO PLACE x LinkedIn : 搵工秘技工作坊'
+pdf_file = '友會活動推介 _ YO PLACE x LinkedIn _ 搵工秘技工作坊.pdf'
 +++
 
 【YO PLACE x LinkedIn : 搵工秘技工作坊】

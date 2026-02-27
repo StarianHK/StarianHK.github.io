@@ -2,6 +2,7 @@
 date = '2022-02-21T18:16:56+08:00'
 draft = false
 title = '活動報名 | 獅子山行 Lionrock Run 慈善越野挑戰賽 | 5月 疫情後見！'
+pdf_file = '活動報名 _ 獅子山行 Lionrock Run 慈善越野挑戰賽 _ 5月 疫情後見！.pdf'
 +++
 
 為

@@ -2,6 +2,7 @@
 date = '2021-03-12T00:19:24+08:00'
 draft = false
 title = '招聘｜數碼港Innovate Your Career 虛擬互動招聘博覽2021'
+pdf_file = '招聘｜數碼港Innovate Your Career 虛擬互動招聘博覽2021.pdf'
 +++
 
 活動概要

@@ -2,6 +2,7 @@
 date = '2026-02-02T16:30:13+08:00'
 draft = false
 title = '【資訊】騰訊招聘 Company Secretarial Assistant'
+pdf_file = '【資訊】騰訊招聘 Company Secretarial Assistant.pdf'
 +++
 
 騰訊招聘

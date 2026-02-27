@@ -2,6 +2,7 @@
 date = '2023-03-23T12:58:08+08:00'
 draft = false
 title = '大灣區快Charge：企業內地與海外暑期實習計畫'
+pdf_file = '大灣區快Charge：企業內地與海外暑期實習計畫.pdf'
 +++
 
 ✦

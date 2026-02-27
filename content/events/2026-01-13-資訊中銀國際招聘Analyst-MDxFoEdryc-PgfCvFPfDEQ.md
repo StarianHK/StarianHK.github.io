@@ -2,6 +2,7 @@
 date = '2026-01-13T12:44:34+08:00'
 draft = false
 title = '【資訊】中銀國際招聘Analyst'
+pdf_file = '【資訊】中銀國際招聘Analyst.pdf'
 +++
 
 中銀國際 BOCI

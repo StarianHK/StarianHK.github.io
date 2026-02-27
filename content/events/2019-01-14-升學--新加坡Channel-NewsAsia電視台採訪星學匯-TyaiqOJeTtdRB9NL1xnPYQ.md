@@ -2,6 +2,7 @@
 date = '2019-01-14T17:15:57+08:00'
 draft = false
 title = '升學 | 新加坡Channel NewsAsia電視台採訪星學匯'
+pdf_file = '升學 _ 新加坡Channel NewsAsia電視台採訪星學匯.pdf'
 +++
 
 一年一度的內地高等教育展在2018年12月圓滿結束，除了各大香港媒體報道當日盛況，新加坡Channel NewsAsia電視台也到場採訪，介紹香港學生到內地升學的概況。

@@ -2,6 +2,7 @@
 date = '2022-03-08T21:22:05+08:00'
 draft = false
 title = '抗疫緊急快訊 | 快測申報平台 & 消防WhatsApp隔離專線上線！'
+pdf_file = '抗疫緊急快訊 _ 快測申報平台 & 消防WhatsApp隔離專線上線！.pdf'
 +++
 
 抗疫緊急快訊

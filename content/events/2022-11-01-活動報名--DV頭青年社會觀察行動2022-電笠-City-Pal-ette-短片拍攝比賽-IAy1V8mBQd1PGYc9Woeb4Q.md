@@ -2,6 +2,7 @@
 date = '2022-11-01T12:39:55+08:00'
 draft = false
 title = '活動報名 | 「DV頭青年社會觀察行動2022  電笠 [City] Pal-ette」 短片拍攝比賽'
+pdf_file = '活動報名 _ 「DV頭青年社會觀察行動2022 電笠 [City] Pal-ette」 短片拍攝比賽.pdf'
 +++
 
 2022

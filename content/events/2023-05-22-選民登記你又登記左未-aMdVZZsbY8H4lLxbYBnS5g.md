@@ -2,6 +2,7 @@
 date = '2023-05-22T17:54:02+08:00'
 draft = false
 title = '選民登記｜你又登記左未？'
+pdf_file = '選民登記｜你又登記左未？.pdf'
 +++
 
 " WORK DEBRIEFING "

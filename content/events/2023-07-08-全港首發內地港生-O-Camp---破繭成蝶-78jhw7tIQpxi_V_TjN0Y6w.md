@@ -2,6 +2,7 @@
 date = '2023-07-08T19:52:38+08:00'
 draft = false
 title = '【全港首發】內地港生 O Camp - 破繭成蝶'
+pdf_file = '【全港首發】內地港生 O Camp - 破繭成蝶.pdf'
 +++
 
 內地港生 O Camp -破繭成蝶
