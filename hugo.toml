@@ -1,9 +1,10 @@
-baseURL = "https://StarianHK.github.io/"
+﻿baseURL = "https://StarianHK.github.io/"
 title = "星學匯 Starian"
 defaultContentLanguage = "zh-tw"
 languageCode = "zh-tw"
 timeZone = "Asia/Hong_Kong"
 theme = "hugo-saasify-theme"
+enableRobotsTXT = true
 
 enableEmoji = true
 enableGitInfo = true
