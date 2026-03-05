@@ -1,5 +1,5 @@
 baseURL = "https://StarianHK.github.io/"
-title = "星學匯 Starian"
+title = "星學匯內地港生升學就業交流中心有限公司"
 defaultContentLanguage = "zh-tw"
 languageCode = "zh-tw"
 timeZone = "Asia/Hong_Kong"
@@ -86,7 +86,7 @@ paginatePath = "page"
     weight = 1
 
   [[menu.main]]
-    name = "協會概況"
+    name = "機構概況"
     url = "/about/"
     weight = 2
 

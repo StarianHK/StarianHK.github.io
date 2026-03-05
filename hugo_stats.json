@@ -1,6 +1,7 @@
 {
   "htmlElements": {
     "tags": [
+      "\\img",
       "a",
       "article",
       "aside",

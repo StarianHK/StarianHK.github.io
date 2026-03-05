@@ -2726,7 +2726,7 @@ input:where([type='file']):focus {
 }
 .star-hero__content h1 {
     color: #ffffff;
-    font-size: clamp(2.9rem, 6.8vw, 6rem);
+    font-size: clamp(2.61rem, 6.12vw, 5.4rem);
     line-height: 1.1;
     margin-bottom: 1.9rem;
     font-weight: 800;

@@ -40,7 +40,10 @@ title_align = "left"
 <p>現由監事會與理事會統籌會務，並設立多個功能部門推進會務，包括會員管理、媒體宣傳、升學考研、實習就業、專業發展、活動策劃與政策研究等。</p>
 </section>
 
-<section class="py-12">
+<img src="/images/jiagou.jpg" alt="組織架構"
+     style="display:block; margin:auto; max-width:70%; height:auto;">
+
+<!-- <section class="py-12">
 <div class="container mx-auto px-6">
 
 <div class="mb-16 fade-in-section">
@@ -281,4 +284,4 @@ title_align = "left"
 
 </div>
 </div>
-</section>
+</section> -->
