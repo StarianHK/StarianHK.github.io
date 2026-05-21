@@ -9,7 +9,7 @@ title_align = "left"
 <section class="join-hero-box">
   <h2>加入星學匯，同行成長</h2>
   <p>無論你是內地在讀港生、準備升學的同學，還是已畢業的青年校友，都歡迎加入我們的社群網絡。</p>
-  <a class="star-btn star-btn-accent" href="https://v.wjx.cn/vm/YRoOSpz.aspx#" target="_blank" rel="noopener noreferrer">立即登記加入</a>
+  <a class="star-btn star-btn-accent" href="https://v.wjx.cn/vm/tV5WolB.aspx" target="_blank" rel="noopener noreferrer">立即登記加入</a>
 </section>
 
 <section class="star-grid-3">
