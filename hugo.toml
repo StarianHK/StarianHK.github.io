@@ -1,7 +1,7 @@
 baseURL = "https://StarianHK.github.io/"
 title = "星學匯內地港生升學就業交流中心"
 defaultContentLanguage = "zh-tw"
-languageCode = "zh-tw"
+locale = "zh-tw"
 timeZone = "Asia/Hong_Kong"
 theme = "hugo-saasify-theme"
 enableRobotsTXT = true
@@ -64,6 +64,14 @@ paginatePath = "page"
 
 [security.funcs]
   getenv = ["^HUGO_", "^CI$"]
+
+[security.node.permissions]
+  allowAddons = ["tailwindcss"]
+  allowChildProcess = ["tailwindcss"]
+  allowRead = ["*"]
+  allowWorker = ["tailwindcss"]
+  allowWrite = []
+  disable = false
 
 [markup]
   [markup.highlight]
