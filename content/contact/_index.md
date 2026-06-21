@@ -13,20 +13,20 @@ title_align = "left"
 </section>
 
 <section class="star-grid-3">
-  <article class="star-card">
+  <article id="wechat" class="star-card contact-anchor">
     <h3>微信</h3>
     <p>可透過微信聯絡了解最新活動安排。</p>
     <img src="/images/wechat_qrcode.png" alt="微信二维码"
      style="display:block; margin:auto; max-width:70%; height:auto;">
   </article>
-  <article class="star-card">
+  <article id="wechat-official" class="star-card contact-anchor">
     <h3>微信公眾號</h3>
     <p>追蹤活動通知、升學與就業資訊更新。</p>
     <br><br>
     <img src="/images/gzh_qrcode.jpg" alt="微信公众号二维码"
      style="display:block; margin:auto; max-width:70%; height:auto;">
   </article>
-  <article class="star-card">
+  <article id="redbook" class="star-card contact-anchor">
     <h3>小紅書</h3>
     <p>持續更新</p>
     <p class="contact-note"></p>

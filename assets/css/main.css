@@ -415,6 +415,10 @@
     font-size: 0.95rem;
   }
 
+  .contact-anchor {
+    scroll-margin-top: 190px;
+  }
+
   .star-footer {
     background: #1e3a8a;
     color: #e2e8f0;

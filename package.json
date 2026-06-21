@@ -5,8 +5,9 @@
   "author": "Chaoming Li",
   "license": "MIT",
   "scripts": {
-    "start": "concurrently \"npx tailwindcss -i themes/hugo-saasify-theme/assets/css/main.css -o static/css/style.css --watch\" \"hugo server -D\"",
-    "build": "tailwindcss -i themes/hugo-saasify-theme/assets/css/main.css -o static/css/style.css --minify && hugo --minify"
+    "start": "concurrently \"npx tailwindcss -i assets/css/main.css -o assets/css/generated.css --watch\" \"hugo server -D\"",
+    "build:css": "tailwindcss -i assets/css/main.css -o assets/css/generated.css --minify",
+    "build": "npm run build:css && hugo --gc --minify"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
