@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - CNAME
   workflow_dispatch:
 
 permissions:
