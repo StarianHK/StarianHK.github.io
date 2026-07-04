@@ -15,6 +15,12 @@
         </script>
     {{ else }}
         {{ $bodyText := .Content | plainify | strings.TrimSpace }}
+        {{ $contentHTML := .Content
+            | replaceRE `(?is)<figure[^>]*>.*?</figure>` ""
+            | replaceRE `(?is)<img[^>]*>` ""
+            | replaceRE `(?is)<p>\s*</p>` ""
+            | safeHTML }}
+        {{ $contentText := $contentHTML | plainify | strings.TrimSpace }}
         <article>
             <header class="mb-8">
                 {{ with .Params.categories }}
@@ -32,18 +38,9 @@
                 {{ partial "post-meta.html" . }}
             </header>
 
-            {{ with .Params.featured_image }}
-                <div class="mb-8">
-                    <img src="{{ . }}"
-                         alt="{{ $.Title }}"
-                         class="w-full h-auto rounded-lg"
-                         loading="lazy">
-                </div>
-            {{ end }}
-
             <div class="prose prose-lg max-w-none">
-                {{ if $bodyText }}
-                    {{ .Content }}
+                {{ if and $bodyText $contentText }}
+                    {{ $contentHTML }}
                 {{ else }}
                     <p>此活動暫未提供可公開訪問的原文連結。</p>
                 {{ end }}
