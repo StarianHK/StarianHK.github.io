@@ -1,17 +1,23 @@
 {{ define "main" }}
 <div class="container py-12 mb-12">
     {{ $targetURL := partial "event-target-url.html" . }}
+    {{ $legacyPdfName := .Params.pdf_file | default "" }}
+    {{ $isLegacyPdfEvent := or (eq $legacyPdfName "S42-1.pdf") (eq $legacyPdfName "S42-2.pdf") }}
+    {{ $legacyPdfURL := "" }}
+    {{ if $isLegacyPdfEvent }}
+        {{ $legacyPdfURL = printf "/wechat_pdfs/%s" $legacyPdfName | relURL }}
+    {{ end }}
 
     {{ if $targetURL }}
         <section class="max-w-3xl mx-auto rounded-3xl panel-sand p-8 md:p-10 text-center">
             <h1 class="text-3xl font-bold mb-4">{{ .Title }}</h1>
-            <p class="text-lg text-slate-700">正在跳轉到對應的微信公眾號文章…</p>
+            <p class="text-lg text-slate-700">Redirecting to the original WeChat article...</p>
             <p class="mt-4">
-                <a href="{{ $targetURL }}" class="detail-link">如未自動跳轉，請點這裡繼續</a>
+                <a href="{{ $targetURL }}" class="detail-link">Open the article if the redirect does not start automatically</a>
             </p>
         </section>
         <script>
-            window.location.replace({{ printf "%q" $targetURL }});
+            window.location.replace({{ $targetURL | jsonify | safeJS }});
         </script>
     {{ else }}
         {{ $bodyText := .Content | plainify | strings.TrimSpace }}
@@ -21,6 +27,7 @@
             | replaceRE `(?is)<p>\s*</p>` ""
             | safeHTML }}
         {{ $contentText := $contentHTML | plainify | strings.TrimSpace }}
+
         <article>
             <header class="mb-8">
                 {{ with .Params.categories }}
@@ -38,13 +45,23 @@
                 {{ partial "post-meta.html" . }}
             </header>
 
-            <div class="prose prose-lg max-w-none">
-                {{ if and $bodyText $contentText }}
-                    {{ $contentHTML }}
-                {{ else }}
-                    <p>此活動暫未提供可公開訪問的原文連結。</p>
-                {{ end }}
-            </div>
+            {{ if $isLegacyPdfEvent }}
+                <section class="event-pdf-card mt-10">
+                    <div class="event-pdf-card__head">
+                        <h2>Document Preview</h2>
+                        <a href="{{ $legacyPdfURL }}" target="_blank" rel="noopener" class="event-pdf-download">Open PDF</a>
+                    </div>
+                    <iframe class="event-pdf-viewer" src="{{ $legacyPdfURL }}#view=FitH" title="{{ .Title }} PDF"></iframe>
+                </section>
+            {{ else }}
+                <div class="prose prose-lg max-w-none">
+                    {{ if and $bodyText $contentText }}
+                        {{ $contentHTML }}
+                    {{ else }}
+                        <p>This event does not currently have a public source article.</p>
+                    {{ end }}
+                </div>
+            {{ end }}
         </article>
 
         <nav class="border-t border-gray-200 mt-12 pt-8">
