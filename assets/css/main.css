@@ -399,6 +399,160 @@
     color: #9ca3af;
   }
 
+  .gallery-page {
+    margin-bottom: 3rem;
+  }
+
+  .gallery-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .gallery-months {
+    display: grid;
+    gap: 2.4rem;
+  }
+
+  .gallery-month {
+    scroll-margin-top: 190px;
+  }
+
+  .gallery-month-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #dbe3f4;
+  }
+
+  .gallery-month-head time {
+    font-family: "Noto Serif TC", "Newsreader", serif;
+    color: #1e3a8a;
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .gallery-month-head span {
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.95rem;
+  }
+
+  .gallery-photo {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 0.65rem;
+    background: #eef2f7;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07);
+  }
+
+  .gallery-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.28s ease;
+  }
+
+  .gallery-photo:hover img {
+    transform: scale(1.04);
+  }
+
+  .gallery-timeline {
+    order: -1;
+    border-left: 3px solid #dbe3f4;
+    padding-left: 1rem;
+  }
+
+  .gallery-timeline nav {
+    display: grid;
+    gap: 1.15rem;
+  }
+
+  .gallery-timeline-year {
+    position: relative;
+  }
+
+  .gallery-timeline-year::before {
+    content: "";
+    position: absolute;
+    left: calc(-1rem - 7px);
+    top: 0.42rem;
+    width: 11px;
+    height: 11px;
+    border-radius: 9999px;
+    background: #ca8a04;
+    box-shadow: 0 0 0 4px #fff7df;
+  }
+
+  .gallery-timeline-year__label {
+    color: #1e3a8a;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.55rem;
+  }
+
+  .gallery-timeline-months {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .gallery-timeline-months a {
+    display: inline-flex;
+    width: fit-content;
+    color: #4b5563;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 0.28rem 0;
+    transform-origin: left center;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .gallery-timeline-months a:hover,
+  .gallery-timeline-months a.is-active {
+    color: #ca8a04;
+    transform: scale(1.18);
+  }
+
+  .gallery-empty {
+    border-radius: 0.9rem;
+    border: 1px solid #dbe3f4;
+    background: #f8fbff;
+    padding: 1.6rem;
+    box-shadow: 0 10px 24px rgba(30, 58, 138, 0.07);
+  }
+
+  .gallery-empty h2 {
+    margin-bottom: 0.65rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .gallery-empty p {
+    color: #374151;
+    line-height: 1.85;
+  }
+
+  .gallery-empty code {
+    color: #1e3a8a;
+    font-weight: 700;
+  }
+
   .join-hero-box {
     margin-bottom: 1.6rem;
     background: linear-gradient(135deg, #eef3ff, #faf3e5);
@@ -634,8 +788,32 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
+    .gallery-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .star-footer-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-layout {
+      grid-template-columns: minmax(0, 1fr) 210px;
+      gap: 3rem;
+    }
+
+    .gallery-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .gallery-timeline {
+      order: initial;
+      position: sticky;
+      top: 190px;
+      max-height: calc(100vh - 220px);
+      overflow: auto;
+      padding-bottom: 0.75rem;
     }
   }
 }

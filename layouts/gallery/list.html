@@ -1,0 +1,122 @@
+{{ define "main" }}
+{{ $galleryRoot := "static/images/gallery" }}
+{{ $monthItems := slice }}
+{{ if fileExists $galleryRoot }}
+  {{ range readDir $galleryRoot }}
+    {{ if and .IsDir (findRE `^\d{4}-\d{2}$` .Name) }}
+      {{ $folder := .Name }}
+      {{ $images := slice }}
+      {{ range readDir (printf "%s/%s" $galleryRoot $folder) }}
+        {{ $ext := lower (path.Ext .Name) }}
+        {{ if in (slice ".jpg" ".jpeg" ".png" ".webp" ".gif" ".avif") $ext }}
+          {{ $images = $images | append (dict
+            "name" .Name
+            "url" (printf "/images/gallery/%s/%s" $folder .Name | relURL)
+          ) }}
+        {{ end }}
+      {{ end }}
+      {{ if gt (len $images) 0 }}
+        {{ $parts := split $folder "-" }}
+        {{ $year := index $parts 0 }}
+        {{ $month := index $parts 1 }}
+        {{ $monthItems = $monthItems | append (dict
+          "key" $folder
+          "year" $year
+          "month" $month
+          "monthLabel" (printf "%d月" (int $month))
+          "images" $images
+        ) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $monthItems = sort $monthItems "key" "desc" }}
+
+<section class="inner-page-banner fade-in-section">
+  <div class="container">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </div>
+</section>
+
+<div class="container gallery-page py-14 md:py-16">
+  {{ if gt (len $monthItems) 0 }}
+    <div class="gallery-layout">
+      <main class="gallery-months" aria-label="相冊月份">
+        {{ range $monthItems }}
+          <section class="gallery-month fade-in-section" id="gallery-{{ .key }}" data-gallery-month="{{ .key }}">
+            <div class="gallery-month-head">
+              <time datetime="{{ .key }}">{{ .year }}年{{ .monthLabel }}</time>
+              <span>{{ len .images }} 張照片</span>
+            </div>
+            <div class="gallery-grid">
+              {{ range .images }}
+                <a class="gallery-photo" href="{{ .url }}" target="_blank" rel="noopener">
+                  <img src="{{ .url }}" alt="{{ replaceRE `[-_]` " " (replace .name (path.Ext .name) "") }}" loading="lazy">
+                </a>
+              {{ end }}
+            </div>
+          </section>
+        {{ end }}
+      </main>
+
+      <aside class="gallery-timeline" aria-label="相冊時間軸">
+        <nav>
+          {{ $years := slice }}
+          {{ range $monthItems }}
+            {{ if not (in $years .year) }}
+              {{ $years = $years | append .year }}
+            {{ end }}
+          {{ end }}
+          {{ range $years }}
+            {{ $year := . }}
+            <div class="gallery-timeline-year">
+              <div class="gallery-timeline-year__label">{{ $year }}年</div>
+              <div class="gallery-timeline-months">
+                {{ range where $monthItems "year" $year }}
+                  <a href="#gallery-{{ .key }}" data-gallery-target="{{ .key }}">{{ .monthLabel }}</a>
+                {{ end }}
+              </div>
+            </div>
+          {{ end }}
+        </nav>
+      </aside>
+    </div>
+  {{ else }}
+    <div class="gallery-empty fade-in-section">
+      <h2>相冊準備中</h2>
+      <p>新的活動照片整理好後，會在這裡按月份展示。</p>
+    </div>
+  {{ end }}
+</div>
+
+{{ if gt (len $monthItems) 0 }}
+<script>
+(() => {
+  const links = Array.from(document.querySelectorAll("[data-gallery-target]"));
+  const sections = Array.from(document.querySelectorAll("[data-gallery-month]"));
+  if (!links.length || !sections.length) return;
+
+  const setActive = (key) => {
+    links.forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.galleryTarget === key);
+    });
+  };
+
+  setActive(sections[0].dataset.galleryMonth);
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible) setActive(visible.target.dataset.galleryMonth);
+  }, {
+    rootMargin: "-22% 0px -62% 0px",
+    threshold: [0.1, 0.35, 0.65]
+  });
+
+  sections.forEach((section) => observer.observe(section));
+})();
+</script>
+{{ end }}
+{{ end }}

@@ -104,9 +104,14 @@ paginatePath = "page"
     weight = 3
 
   [[menu.main]]
+    name = "活動相冊"
+    url = "/gallery/"
+    weight = 4
+
+  [[menu.main]]
     name = "加入我們"
     url = "/contact/"
-    weight = 4
+    weight = 5
 
   [[menu.footer_column_1]]
     name = "協會概況"
@@ -124,9 +129,14 @@ paginatePath = "page"
     weight = 1
 
   [[menu.footer_column_2]]
+    name = "活動相冊"
+    url = "/gallery/"
+    weight = 2
+
+  [[menu.footer_column_2]]
     name = "活動 RSS"
     url = "/events/index.xml"
-    weight = 2
+    weight = 3
 
   [[menu.footer_column_3]]
     name = "隱私政策"
