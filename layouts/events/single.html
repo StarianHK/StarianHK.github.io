@@ -1,32 +1,37 @@
-﻿{{ define "main" }}
+{{ define "main" }}
 <div class="container py-12 mb-12">
-    {{ $safeBase := .Title | replaceRE "[\\\\/:*?\"<>|\\n\\r\\t]+" "_" | replaceRE "\\s+" " " }}
-    {{ if gt (len $safeBase) 80 }}
-        {{ $safeBase = substr $safeBase 0 80 }}
-    {{ end }}
-    {{ $pdfName := .Params.pdf_file | default (printf "%s.pdf" $safeBase) }}
-    {{ $pdfPath := printf "static/wechat_pdfs/%s" $pdfName }}
-    {{ $pdfURL := printf "/wechat_pdfs/%s" $pdfName | relURL }}
-    {{ $hasPdf := fileExists $pdfPath }}
+    {{ $targetURL := partial "event-target-url.html" . }}
 
-    <article>
-        <header class="mb-8">
-            {{ with .Params.categories }}
-                <div class="mb-4">
-                    {{ range . }}
-                        <a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}"
-                           class="inline-block px-3 py-1 text-sm font-medium text-primary-600 bg-primary-50 rounded-full hover:bg-primary-100 mr-2">
-                            {{ . }}
-                        </a>
-                    {{ end }}
-                </div>
-            {{ end }}
+    {{ if $targetURL }}
+        <section class="max-w-3xl mx-auto rounded-3xl panel-sand p-8 md:p-10 text-center">
+            <h1 class="text-3xl font-bold mb-4">{{ .Title }}</h1>
+            <p class="text-lg text-slate-700">正在跳轉到對應的微信公眾號文章…</p>
+            <p class="mt-4">
+                <a href="{{ $targetURL }}" class="detail-link">如未自動跳轉，請點這裡繼續</a>
+            </p>
+        </section>
+        <script>
+            window.location.replace({{ printf "%q" $targetURL }});
+        </script>
+    {{ else }}
+        {{ $bodyText := .Content | plainify | strings.TrimSpace }}
+        <article>
+            <header class="mb-8">
+                {{ with .Params.categories }}
+                    <div class="mb-4">
+                        {{ range . }}
+                            <a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}"
+                               class="inline-block px-3 py-1 text-sm font-medium text-primary-600 bg-primary-50 rounded-full hover:bg-primary-100 mr-2">
+                                {{ . }}
+                            </a>
+                        {{ end }}
+                    </div>
+                {{ end }}
 
-            <h1 class="text-4xl font-bold mb-4">{{ .Title }}</h1>
-            {{ partial "post-meta.html" . }}
-        </header>
+                <h1 class="text-4xl font-bold mb-4">{{ .Title }}</h1>
+                {{ partial "post-meta.html" . }}
+            </header>
 
-        {{ if not $hasPdf }}
             {{ with .Params.featured_image }}
                 <div class="mb-8">
                     <img src="{{ . }}"
@@ -37,52 +42,45 @@
             {{ end }}
 
             <div class="prose prose-lg max-w-none">
-                {{ .Content }}
+                {{ if $bodyText }}
+                    {{ .Content }}
+                {{ else }}
+                    <p>此活動暫未提供可公開訪問的原文連結。</p>
+                {{ end }}
             </div>
-        {{ end }}
-    </article>
+        </article>
 
-    {{ if $hasPdf }}
-        <section class="event-pdf-card mt-10">
-            <div class="event-pdf-card__head">
-                <h2>PDF Preview</h2>
-                <a href="{{ $pdfURL }}" target="_blank" rel="noopener" class="event-pdf-download">Download PDF</a>
+        <nav class="border-t border-gray-200 mt-12 pt-8">
+            <div class="flex justify-between items-center">
+                {{ with .PrevInSection }}
+                    <a href="{{ .RelPermalink }}" class="group flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-600 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div>
+                            <div class="text-sm text-gray-600">{{ i18n "previousPost" $ }}</div>
+                            <div class="font-medium group-hover:text-primary-600">{{ .Title }}</div>
+                        </div>
+                    </a>
+                {{ else }}
+                    <div></div>
+                {{ end }}
+
+                {{ with .NextInSection }}
+                    <a href="{{ .RelPermalink }}" class="group flex items-center text-right">
+                        <div>
+                            <div class="text-sm text-gray-600">{{ i18n "nextPost" $ }}</div>
+                            <div class="font-medium group-hover:text-primary-600">{{ .Title }}</div>
+                        </div>
+                        <svg class="w-5 h-5 ml-2 text-gray-600 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </a>
+                {{ else }}
+                    <div></div>
+                {{ end }}
             </div>
-            <iframe class="event-pdf-viewer" src="{{ $pdfURL }}#view=FitH" title="{{ .Title }} PDF"></iframe>
-        </section>
+        </nav>
     {{ end }}
-
-    <nav class="border-t border-gray-200 mt-12 pt-8">
-        <div class="flex justify-between items-center">
-            {{ with .PrevInSection }}
-                <a href="{{ .RelPermalink }}" class="group flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-gray-600 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    <div>
-                        <div class="text-sm text-gray-600">{{ i18n "previousPost" $ }}</div>
-                        <div class="font-medium group-hover:text-primary-600">{{ .Title }}</div>
-                    </div>
-                </a>
-            {{ else }}
-                <div></div>
-            {{ end }}
-
-            {{ with .NextInSection }}
-                <a href="{{ .RelPermalink }}" class="group flex items-center text-right">
-                    <div>
-                        <div class="text-sm text-gray-600">{{ i18n "nextPost" $ }}</div>
-                        <div class="font-medium group-hover:text-primary-600">{{ .Title }}</div>
-                    </div>
-                    <svg class="w-5 h-5 ml-2 text-gray-600 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                </a>
-            {{ else }}
-                <div></div>
-            {{ end }}
-        </div>
-    </nav>
 </div>
 {{ end }}
-

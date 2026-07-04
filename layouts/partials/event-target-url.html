@@ -1,0 +1,16 @@
+{{- $sourceLink := .Params.source_link | default "" -}}
+{{- if $sourceLink -}}
+{{- $sourceLink -}}
+{{- else -}}
+{{- $articleID := .Params.article_id | default "" -}}
+{{- if and (eq $articleID "") .File -}}
+  {{- $baseName := .File.BaseFileName -}}
+  {{- $derivedID := replaceRE "^.*-([A-Za-z0-9_-]{20,})$" "$1" $baseName -}}
+  {{- if ne $derivedID $baseName -}}
+    {{- $articleID = $derivedID -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (ne $articleID "") (gt (len (findRE "^[A-Za-z0-9_-]{20,}$" $articleID)) 0) -}}
+{{- printf "https://mp.weixin.qq.com/s/%s" $articleID -}}
+{{- end -}}
+{{- end -}}

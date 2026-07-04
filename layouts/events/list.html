@@ -1,4 +1,4 @@
-﻿{{ define "main" }}
+{{ define "main" }}
 <section class="inner-page-banner fade-in-section">
   <div class="container">
     <h1>{{ .Title }}</h1>
@@ -10,10 +10,11 @@
   <div class="events-grid">
     {{ $paginator := .Paginate .Pages.ByDate.Reverse 9 }}
     {{ range $paginator.Pages }}
+    {{ $targetURL := partial "event-target-url.html" . }}
     <article class="event-card fade-in-section">
       <div class="event-card-body">
         <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
-        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        <h2><a href="{{ or $targetURL .RelPermalink }}">{{ .Title }}</a></h2>
       </div>
     </article>
     {{ end }}

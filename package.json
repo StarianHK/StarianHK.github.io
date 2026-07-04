@@ -7,7 +7,9 @@
   "scripts": {
     "start": "concurrently \"npx tailwindcss -i assets/css/main.css -o assets/css/generated.css --watch\" \"hugo server -D\"",
     "build:css": "tailwindcss -i assets/css/main.css -o assets/css/generated.css --minify",
-    "build": "npm run build:css && hugo --gc --minify"
+    "build": "node scripts/build-deploy.mjs",
+    "build:with-pdfs": "npm run build:css && hugo --gc --minify",
+    "deploy:cloudflare": "npm run build && npm exec --package wrangler@latest -- wrangler pages deploy public --project-name website"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
