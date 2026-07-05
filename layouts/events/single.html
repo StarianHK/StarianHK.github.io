@@ -51,7 +51,16 @@
                         <h2>Document Preview</h2>
                         <a href="{{ $legacyPdfURL }}" target="_blank" rel="noopener" class="event-pdf-download">Open PDF</a>
                     </div>
-                    <iframe class="event-pdf-viewer" src="{{ $legacyPdfURL }}#view=FitH" title="{{ .Title }} PDF"></iframe>
+                    <div class="prose prose-lg max-w-none px-6 pb-6">
+                        <p>
+                            This document is available and can be opened directly in a new tab.
+                            Some browsers do not reliably render embedded PDF previews on GitHub Pages,
+                            so the inline viewer has been disabled for this page.
+                        </p>
+                        <p>
+                            <a href="{{ $legacyPdfURL }}" target="_blank" rel="noopener" class="detail-link">Open the PDF document</a>
+                        </p>
+                    </div>
                 </section>
             {{ else }}
                 <div class="prose prose-lg max-w-none">
