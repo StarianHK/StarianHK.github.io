@@ -138,10 +138,10 @@ function printHelp() {
   npm run sync:wechat -- [options]
 
 Default flow:
-  1. Open the WeChat Official Accounts backend login page.
-  2. Wait for QR-code sign-in.
-  3. Query the target account's published article list automatically.
-  4. Save the latest article as a new content/events item.
+  1. Open the WeChat Official Accounts backend and wait for QR-code sign-in.
+  2. Open the normal article-management page automatically.
+  3. Read all published article links returned by that page.
+  4. Compare article IDs with content/events and import every missing article.
   5. Build the site and optionally commit + push.
 
 Options:
@@ -771,76 +771,94 @@ function dedupeCandidates(candidates) {
   });
 }
 
-async function fetchLatestArticleUrlFromBackend(context, page, token, fakeid, referer) {
-  const errors = [];
-  for (const url of getAppmsgPublishUrls(token, fakeid)) {
-    try {
-      const data = await fetchJsonWithSession(context, page, url, referer);
-      const candidates = dedupeCandidates(collectArticleCandidates(data));
-      if (candidates.length === 0) {
-        const responseCode = data?.base_resp?.ret ?? data?.ret ?? "unknown";
-        const responseMessage =
-          data?.base_resp?.errmsg || data?.base_resp?.err_msg || data?.errmsg || "no error message";
-        const responseKeys =
-          data && typeof data === "object" ? Object.keys(data).join(", ") : typeof data;
-        const responsePreview = JSON.stringify(data).slice(0, 500);
-        errors.push(
-          `endpoint returned no article candidates (ret=${responseCode}, errmsg=${responseMessage}, keys=${responseKeys}, preview=${responsePreview})`,
-        );
-        if (String(responseCode) === "200013") {
-          break;
-        }
-        continue;
-      }
-
-      candidates.sort((left, right) => right.timestamp - left.timestamp);
-      console.log(
-        `Found ${candidates.length} published article candidate(s); selecting ${candidates[0].title}.`,
-      );
-      return candidates[0].url;
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : String(error));
-    }
-  }
-
-  // The authenticated JSON endpoint is frequently rate-limited. The public
-  // account page usually remains available and exposes the same article links.
+async function fetchArticleCandidatesFromBackend(context, page, token, fakeid, referer) {
+  // Open the normal article-management page and observe the requests it makes.
+  // This follows the browser UI flow instead of issuing private API calls from
+  // Node, which is what triggered WeChat's frequency control previously.
   try {
-    const profileUrl = `https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=${encodeURIComponent(fakeid)}&scene=124#wechat_redirect`;
-    const profilePage = await context.newPage();
-    await profilePage.goto(profileUrl, { waitUntil: "domcontentloaded", timeout: 60_000 });
-    await waitForQuietPage(profilePage);
-    const candidates = await profilePage.evaluate(() => {
+    const responseBodies = [];
+    const onResponse = async (response) => {
+      if (!response.url().includes("mp.weixin.qq.com")) return;
+      const contentType = response.headers()["content-type"] || "";
+      if (!contentType.includes("json") && !response.url().includes("appmsg")) return;
+      try {
+        const text = await response.text();
+        if (text.includes("mp.weixin.qq.com/s/") || text.includes("appmsgex") || text.includes("appmsg_info")) {
+          responseBodies.push(text);
+        }
+      } catch {
+        // Ignore responses that are unavailable after navigation.
+      }
+    };
+    context.on("response", onResponse);
+    let managementPage = page;
+    console.log("Opening the authenticated backend home page...");
+    await managementPage.goto(referer, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await waitForQuietPage(managementPage);
+    console.log(`Backend home loaded: ${managementPage.url()}`);
+    const appmsgLink = managementPage.locator('a[href*="appmsgpublish"], [data-href*="appmsgpublish"]').first();
+    if (await appmsgLink.count()) {
+      console.log("Opening article management from the backend navigation...");
+      try {
+        await appmsgLink.click({ timeout: 10_000 });
+      } catch {
+        await appmsgLink.evaluate((element) => element.click());
+      }
+    } else {
+      const contentMenu = managementPage.getByText(/\\u5185\\u5bb9\\u7ba1\\u7406|\\u6587\\u7ae0\\u7ba1\\u7406|\\u53d1\\u8868\\u8bb0\\u5f55/).first();
+      if (!(await contentMenu.count())) {
+        throw new Error("Article-management menu was not found on the authenticated home page.");
+      }
+      console.log("Opening article management from the content menu...");
+      try {
+        await contentMenu.click({ timeout: 10_000 });
+      } catch {
+        await contentMenu.evaluate((element) => element.click());
+      }
+    }
+    const popupPage = context.pages().find((candidate) =>
+      candidate !== managementPage && /appmsg|material/i.test(candidate.url()),
+    );
+    if (popupPage) {
+      managementPage = popupPage;
+      await page.close();
+      await waitForQuietPage(managementPage);
+    }
+    await waitForQuietPage(managementPage);
+    console.log(`Article management loaded: ${managementPage.url()}`);
+    await sleep(2_000);
+    context.off("response", onResponse);
+
+    const networkCandidates = dedupeCandidates(
+      responseBodies.flatMap((body) => collectArticleCandidates(maybeParseJsonString(body) || body)),
+    );
+    if (networkCandidates.length > 0) {
+      networkCandidates.sort((left, right) => right.timestamp - left.timestamp);
+      console.log(`Found ${networkCandidates.length} article candidate(s) from the management page.`);
+      return networkCandidates;
+    }
+
+    const candidates = await managementPage.evaluate(() => {
       const normalize = (value) => String(value || "").replace(/\s+/g, " ").trim();
-      return [...document.querySelectorAll("a[href]")]
-        .map((link) => {
-          try {
-            const url = new URL(link.href, window.location.href).toString();
-            return { title: normalize(link.textContent), url };
-          } catch {
-            return null;
-          }
-        })
-        .filter((item) => item && item.title && /^https?:\/\/mp\.weixin\.qq\.com\/s\//i.test(item.url));
+      const links = [...document.querySelectorAll("a[href], [data-url], [data-link]")];
+      return links.map((link) => {
+        try {
+          const rawUrl = link.href || link.getAttribute("data-url") || link.getAttribute("data-link");
+          const url = new URL(rawUrl, window.location.href).toString();
+          return { title: normalize(link.textContent), url };
+        } catch {
+          return null;
+        }
+      }).filter((item) => item && /^https?:\/\/mp\.weixin\.qq\.com\/s\//i.test(item.url));
     });
     if (candidates.length > 0) {
-      console.log(`Found ${candidates.length} article link(s) on the public account page; selecting the first one.`);
-      return candidates[0].url;
+      console.log(`Found ${candidates.length} article link(s) in the article-management page.`);
+      return candidates;
     }
-    errors.push("public account page contained no article links");
+    throw new Error("The article-management page loaded, but no article links were found in its page or network data.");
   } catch (error) {
-    errors.push(`public account page fallback failed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Unable to read the article-management page automatically: ${error instanceof Error ? error.message : String(error)}`);
   }
-
-  if (errors.some((message) => message.includes("200013") || message.includes("freq control"))) {
-    throw new Error(
-      `WeChat is rate-limiting the article list (ret=200013, freq control). Wait a few minutes before retrying; ${errors.join(" | ")}`,
-    );
-  }
-
-  throw new Error(
-    `Unable to fetch the target account's published article list. ${errors.join(" | ")}`,
-  );
 }
 
 async function extractArticleFromPage(page, fallbackTitle = "") {
@@ -896,7 +914,7 @@ async function extractArticleFromPage(page, fallbackTitle = "") {
   };
 }
 
-async function fetchLatestArticle(options) {
+async function fetchArticles(options) {
   const context = await openBrowserContext(options);
 
   try {
@@ -906,7 +924,7 @@ async function fetchLatestArticle(options) {
         waitUntil: "domcontentloaded",
         timeout: 60_000,
       });
-      return await extractArticleFromPage(page);
+      return [await extractArticleFromPage(page)];
     }
 
     const page = context.pages()[0] || (await context.newPage());
@@ -920,33 +938,20 @@ async function fetchLatestArticle(options) {
       context,
       options.waitTimeoutMs,
     );
+    console.log("Login detected. Opening the article-management page automatically.");
+    // The target account's biz is configured above, so no account-search API call
+    // is needed. Avoiding that extra request also reduces WeChat rate limiting.
+    const fakeid = TARGET_ACCOUNT.biz;
 
-    console.log("Login detected. Fetching the latest published article automatically.");
-    const account = await searchTargetAccount(context, homePage, token, homeUrl);
-    const fakeid =
-      account.fakeid || account.fakeId || account.id || account.biz || account.user_name;
-
-    if (!fakeid) {
-      throw new Error("Authenticated search succeeded, but no account identifier was returned.");
-    }
-
-    console.log(`Target account resolved: ${account.nickname || TARGET_ACCOUNT.nickname} (id=${fakeid}).`);
-
-    const latestArticleUrl = await fetchLatestArticleUrlFromBackend(
-      context,
-      homePage,
-      token,
-      fakeid,
-      homeUrl,
-    );
-
+    const candidates = await fetchArticleCandidatesFromBackend(context, homePage, token, fakeid, homeUrl);
+    const articles = [];
     const articlePage = await context.newPage();
-    await articlePage.goto(latestArticleUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 60_000,
-    });
-
-    return await extractArticleFromPage(articlePage, TARGET_ACCOUNT.nickname);
+    for (const candidate of candidates) {
+      await articlePage.goto(candidate.url, { waitUntil: "domcontentloaded", timeout: 60_000 });
+      articles.push(await extractArticleFromPage(articlePage, candidate.title || TARGET_ACCOUNT.nickname));
+    }
+    await articlePage.close();
+    return articles;
   } finally {
     await context.close();
   }
@@ -971,19 +976,22 @@ async function main() {
     );
   }
 
-  const article = await fetchLatestArticle(options);
-  const eventFile = await writeEventFile(repoRoot, article, options);
-
-  if (eventFile.skipped) {
-    console.log(`Latest article already exists: ${eventFile.relativePath}`);
-    if (!options.build && !options.push) {
-      return;
-    }
-    console.log("Continuing with build and auto-push checks for pending sync changes.");
-  } else {
-    console.log(`Event content created: ${eventFile.relativePath}`);
+  const articles = await fetchArticles(options);
+  const eventFiles = [];
+  for (const article of articles) {
+    eventFiles.push({ article, file: await writeEventFile(repoRoot, article, options) });
   }
-  console.log(`Source link: ${article.sourceLink}`);
+  const createdFiles = eventFiles.filter(({ file }) => !file.skipped);
+  const skippedFiles = eventFiles.filter(({ file }) => file.skipped);
+  console.log(
+    `Sync summary: ${articles.length} published article(s) found, ${createdFiles.length} new, ${skippedFiles.length} already synced.`,
+  );
+
+  for (const { article, file } of eventFiles) {
+    console.log(`${file.skipped ? "Already synced" : "Event content created"}: ${file.relativePath}`);
+    console.log(`Source link: ${article.sourceLink}`);
+  }
+  if (createdFiles.length === 0 && !options.build && !options.push) return;
 
   if (options.build) {
     runBuild(repoRoot);
@@ -992,12 +1000,12 @@ async function main() {
   if (options.push) {
     const currentChangedPaths = getChangedPathsSinceHead(repoRoot);
     const pathsToStage = [...new Set([
-      ...(currentChangedPaths.has(eventFile.gitPath) ? [eventFile.gitPath] : []),
+      ...createdFiles.map(({ file }) => file.gitPath).filter((filePath) => currentChangedPaths.has(filePath)),
       ...[...currentChangedPaths]
       .filter((filePath) => !initialChangedPaths.has(filePath))
     ])].sort();
     const commitMessage =
-      options.commitMessage || `sync(wechat): ${article.title}`;
+      options.commitMessage || `sync(wechat): ${createdFiles.length} article(s)`;
     if (options.dryRun) {
       dryRunStageCommitAndPush(commitMessage, pathsToStage);
     } else {

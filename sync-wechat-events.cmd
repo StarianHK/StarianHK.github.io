@@ -5,6 +5,7 @@ cd /d "%~dp0"
 
 title WeChat Events Sync
 echo Preparing WeChat sync...
+echo The browser will open the article-management page automatically after sign-in.
 
 if not exist "node_modules\playwright-core\package.json" (
   echo Installing frontend dependencies...
