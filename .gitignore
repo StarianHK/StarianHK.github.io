@@ -3,5 +3,6 @@ public/
 articles/
 resources/
 .agents/
+.cache/
 .hugo-cache/
 .hugo_build.lock

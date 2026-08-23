@@ -9,6 +9,9 @@
     "build:css": "tailwindcss -i assets/css/main.css -o assets/css/generated.css --minify",
     "build": "node scripts/build-deploy.mjs",
     "build:with-pdfs": "npm run build:css && hugo --gc --minify",
+    "sync:wechat": "node scripts/sync-wechat-events.mjs",
+    "sync:wechat:auto": "node scripts/sync-wechat-events.mjs --push",
+    "sync:wechat:push": "node scripts/sync-wechat-events.mjs --push",
     "deploy:cloudflare": "npm run build && npm exec --package wrangler@latest -- wrangler pages deploy public --project-name website"
   },
   "devDependencies": {
@@ -16,6 +19,8 @@
     "@tailwindcss/typography": "^0.5.10",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
+    "hugo-bin": "^0.149.2",
+    "playwright-core": "^1.61.1",
     "postcss": "^8.4.31",
     "postcss-cli": "^10.1.0",
     "tailwindcss": "^3.3.5"
