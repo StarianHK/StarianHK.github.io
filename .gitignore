@@ -6,3 +6,11 @@ resources/
 .cache/
 .hugo-cache/
 .hugo_build.lock
+
+# Local tooling / caches
+.zcode/
+__pycache__/
+scripts/__pycache__/
+
+# Hugo build stats (generated on every build)
+hugo_stats.json

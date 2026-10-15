@@ -762,13 +762,95 @@ function collectArticleCandidates(value, candidates = []) {
 function dedupeCandidates(candidates) {
   const seen = new Set();
   return candidates.filter((candidate) => {
-    if (seen.has(candidate.url)) {
+    let key;
+    try {
+      key = extractArticleKey(candidate.url);
+    } catch {
+      key = candidate.url;
+    }
+    if (seen.has(key)) {
       return false;
     }
 
-    seen.add(candidate.url);
+    seen.add(key);
     return true;
   });
+}
+
+async function loadSyncedArticleKeyMatcher(contentDir) {
+  let names = [];
+  try {
+    const entries = await fs.readdir(contentDir, { withFileTypes: true });
+    names = entries
+      .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".md"))
+      .map((entry) => entry.name.toLowerCase());
+  } catch {
+    names = [];
+  }
+
+  return (articleKey) =>
+    names.some((name) => name.endsWith(`-${articleKey.toLowerCase()}.md`));
+}
+
+function getPublishListPageUrl(token, fakeid, begin) {
+  return `https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&begin=${begin}&count=5&query=&fakeid=${encodeURIComponent(fakeid)}&type=101_1&free_publish_type=1&sub_action=list_ex&token=${token}&lang=zh_CN&f=json&ajax=1`;
+}
+
+const PUBLISH_LIST_PAGE_SIZE = 5;
+const PUBLISH_LIST_MAX_PAGES = 60;
+
+async function fetchArticlesViaApi(context, page, token, fakeid, referer, isKeySynced) {
+  const allCandidates = [];
+  let begin = 0;
+
+  for (let pageIndex = 0; pageIndex < PUBLISH_LIST_MAX_PAGES; pageIndex += 1) {
+    const url = getPublishListPageUrl(token, fakeid, begin);
+    const data = await fetchJsonWithSession(context, page, url, referer);
+
+    const ret = Number(data?.base_resp?.ret ?? 0);
+    if (ret !== 0) {
+      throw new Error(
+        `appmsgpublish returned ret=${ret} (${data?.base_resp?.err_msg || "unknown error"}) at begin=${begin}.`,
+      );
+    }
+
+    const publishList = Array.isArray(data.publish_list) ? data.publish_list : [];
+    if (publishList.length === 0) {
+      break;
+    }
+
+    const pageCandidates = dedupeCandidates(
+      collectArticleCandidates(data),
+    ).filter((candidate) => !allCandidates.some((existing) => existing.url === candidate.url));
+
+    if (pageCandidates.length === 0) {
+      break;
+    }
+
+    allCandidates.push(...pageCandidates);
+
+    // The list is ordered newest-first, so once a whole page only contains
+    // articles that are already synced there is nothing newer left to find.
+    if (pageCandidates.every((candidate) => {
+      try {
+        return isKeySynced(extractArticleKey(candidate.url));
+      } catch {
+        return false;
+      }
+    })) {
+      break;
+    }
+
+    begin += publishList.length;
+    if (Number.isFinite(Number(data.total_count)) && begin >= Number(data.total_count)) {
+      break;
+    }
+
+    await sleep(1_500 + Math.floor(Math.random() * 1_500));
+  }
+
+  allCandidates.sort((left, right) => right.timestamp - left.timestamp);
+  return allCandidates;
 }
 
 async function fetchArticleCandidatesFromBackend(context, page, token, fakeid, referer) {
@@ -938,19 +1020,62 @@ async function fetchArticles(options) {
       context,
       options.waitTimeoutMs,
     );
-    console.log("Login detected. Opening the article-management page automatically.");
+    console.log("Login detected. Fetching the publish list via the backend API.");
     // The target account's biz is configured above, so no account-search API call
     // is needed. Avoiding that extra request also reduces WeChat rate limiting.
     const fakeid = TARGET_ACCOUNT.biz;
 
-    const candidates = await fetchArticleCandidatesFromBackend(context, homePage, token, fakeid, homeUrl);
-    const articles = [];
-    const articlePage = await context.newPage();
-    for (const candidate of candidates) {
-      await articlePage.goto(candidate.url, { waitUntil: "domcontentloaded", timeout: 60_000 });
-      articles.push(await extractArticleFromPage(articlePage, candidate.title || TARGET_ACCOUNT.nickname));
+    const contentDir = path.resolve(process.cwd(), options.contentDir);
+    const isKeySynced = await loadSyncedArticleKeyMatcher(contentDir);
+
+    let candidates;
+    try {
+      candidates = await fetchArticlesViaApi(context, homePage, token, fakeid, homeUrl, isKeySynced);
+      console.log(`Found ${candidates.length} article candidate(s) via the publish-list API.`);
+    } catch (apiError) {
+      console.log(
+        `Publish-list API failed (${apiError instanceof Error ? apiError.message : String(apiError)}). Falling back to reading the article-management page.`,
+      );
+      candidates = await fetchArticleCandidatesFromBackend(context, homePage, token, fakeid, homeUrl);
     }
-    await articlePage.close();
+
+    const articles = [];
+    const newCandidates = candidates.filter((candidate) => {
+      try {
+        return !isKeySynced(extractArticleKey(candidate.url));
+      } catch {
+        return true;
+      }
+    });
+    console.log(
+      `${newCandidates.length} article(s) not synced yet; ${candidates.length - newCandidates.length} already synced.`,
+    );
+
+    // Candidates from the API already carry title + publish timestamp, so only
+    // ones missing a timestamp need a page visit to fill in the details.
+    const articlePage = await context.newPage();
+    try {
+      for (const candidate of newCandidates) {
+        if (candidate.title && candidate.timestamp > 0) {
+          articles.push({
+            title: candidate.title,
+            sourceLink: candidate.url,
+            publishedAt: "",
+            publishText: "",
+            unixTimestamp: candidate.timestamp,
+          });
+          continue;
+        }
+
+        await articlePage.goto(candidate.url, { waitUntil: "domcontentloaded", timeout: 60_000 });
+        articles.push(
+          await extractArticleFromPage(articlePage, candidate.title || TARGET_ACCOUNT.nickname),
+        );
+        await sleep(1_000);
+      }
+    } finally {
+      await articlePage.close();
+    }
     return articles;
   } finally {
     await context.close();

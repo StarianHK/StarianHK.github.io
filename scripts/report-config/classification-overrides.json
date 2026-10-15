@@ -1,0 +1,10 @@
+{
+  "_說明": "人工校對覆蓋庫：鍵為 content/events 下的 md 文件名，值為 {cat: 分類ID, note: 原因}。修改後重新運行腳本即可生效，優先級最高。",
+  "2017-10-26-與劉鳴煒主席對談-J5rdVOGyFxD4Eth42YFa1A.md": {"cat": "D", "note": "與青年發展委員會主席對談，屬社會事務交流"},
+  "2018-09-07-轉發創業在四川香港青年想創業來這-5gM0ShBTHpcA95Ff_H-hAg.md": {"cat": "B", "note": "轉發的創業資訊，主題為就業創業"},
+  "2020-10-29-嚟華潤一齊拼未來共拼搏令你想成真-gGm1qyx4_aCTi5gkXD9KrA.md": {"cat": "B", "note": "華潤招聘宣傳（同一活動系列多為招聘宣講）"},
+  "2022-08-15-內地港生星級同學匯呈獻--202223內地升學講座及在學港生交流會-1hlPHiuUHOMVs4wmG_azNg.md": {"cat": "A", "note": "主題為內地升學講座，交流會為輔"},
+  "2026-03-14-同心向新共赴未來星學匯成員共話新程-7yXDY4b2VZTXavXcX1P7bw.md": {"cat": "D", "note": "成員學習全國兩會及「十五五」規劃綱要心得"},
+  "2026-06-06-資訊JPMorganChase-2027-Global-Private-Bank-Advisor-Program-m3jhlTgmJfP4-pChPP_g3g.md": {"cat": "B", "note": "外資銀行校園招聘項目"},
+  "2026-07-03-聚焦星學成長路共築青春新夢想-TzRr_Yzb3HUxn9UmyE52wg.md": {"cat": "D", "note": "學習習近平主席「七一」重要講話精神心得"}
+}
